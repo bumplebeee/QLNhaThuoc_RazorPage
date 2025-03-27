@@ -1,7 +1,12 @@
+using Microsoft.EntityFrameworkCore;
+using QLThuoc.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
+builder.Services.AddDbContext<QlthuocContext>(options =>
+               options.UseSqlServer(builder.Configuration.GetConnectionString("QLThuocConnection")));
 
 var app = builder.Build();
 
