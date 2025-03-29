@@ -320,6 +320,7 @@
                         </nav>
                     </div>
 
+                    <!-- Hiển thị danh sách thuốc -->
                     <div class="row">
                         <div class="col-12 mt-4">
                             <div class="table-responsive shadow rounded">
@@ -342,33 +343,141 @@
                                         @{
                                             int stt = 1;
                                         }
-                                        @foreach (var thuoc in Model.DanhSachThuoc)
+                                        @if (Model.DanhSachThuoc != null)
+                                        {
+                                            @foreach (var thuoc in Model.DanhSachThuoc)
+                                            {
+                                                <tr>
+                                                    <td class="p-3">@stt</td>
+                                                    <td class="p-3">@thuoc.IdThuoc</td>
+                                                    <td class="p-3">@thuoc.TenThuoc</td>
+                                                    <td class="p-3">@thuoc.IdDmNavigation.Ten</td>
+                                                    <td class="p-3">@thuoc.IdXxNavigation.Ten</td>
+                                                    <td class="p-3">@thuoc.IdDvtNavigation.Ten</td>
+                                                    <td class="p-3">@thuoc.SoLuongTon</td>
+                                                    <td class="p-3">@thuoc.DonGia.ToString("N0") VND</td>
+                                                    <td class="p-3">@thuoc.HanSuDung.ToString("dd/MM/yyyy")</td>
+                                                    <td class="text-end p-3">
+                                                        <!-- Nút xem thông tin (nếu có) -->
+                                                        <a href="#" class="btn btn-icon btn-pills btn-soft-primary" data-bs-toggle="modal" data-bs-target="#viewprofile" onclick="showThuocInfo('@thuoc.IdThuoc', '@thuoc.TenThuoc', '@thuoc.ThanhPhan', '@thuoc.DonGia.ToString("N0") VND')">
+                                                            <i class="uil uil-eye"></i>
+                                                        </a>
+                                                        <!-- Nút chỉnh sửa: chuyển dữ liệu vào form modal -->
+                                                        <a href="#" class="btn btn-icon btn-pills btn-soft-success"
+                                                           onclick="populateEditForm('@thuoc.IdThuoc', '@thuoc.TenThuoc', '@thuoc.IdDm', '@thuoc.IdXx', '@thuoc.IdDvt', '@thuoc.SoLuongTon', '@thuoc.GiaNhap', '@thuoc.DonGia', '@thuoc.ThanhPhan')">
+                                                            <i class="uil uil-pen"></i>
+                                                        </a>
+                                                        <a href="#" class="btn btn-icon btn-pills btn-soft-danger"><i class="uil uil-trash"></i></a>
+                                                    </td>
+                                                </tr>
+                                                stt++;
+                                            }
+                                        }
+                                        else
                                         {
                                             <tr>
-                                                <td class="p-3">@stt</td>
-                                                <td class="p-3">@thuoc.IdThuoc</td>
-                                                <td class="p-3">@thuoc.TenThuoc</td>
-                                                <td class="p-3">@thuoc.IdDmNavigation.Ten</td>
-                                                <td class="p-3">@thuoc.IdXxNavigation.Ten</td>
-                                                <td class="p-3">@thuoc.IdDvtNavigation.Ten</td>
-                                                <td class="p-3">@thuoc.SoLuongTon</td>
-                                                <td class="p-3">@thuoc.DonGia.ToString("N0") VND</td>
-                                                <td class="p-3">@thuoc.HanSuDung.ToString("dd/MM/yyyy")</td>
-                                                <td class="text-end p-3">
-                                                    <a href="#" class="btn btn-icon btn-pills btn-soft-primary" data-bs-toggle="modal" data-bs-target="#viewprofile" onclick="showThuocInfo('@thuoc.IdThuoc', '@thuoc.TenThuoc', '@thuoc.ThanhPhan', '@thuoc.DonGia.ToString("N0") VND')">
-                                                        <i class="uil uil-eye"></i>
-                                                    </a>
-                                                    <a href="#" class="btn btn-icon btn-pills btn-soft-success"><i class="uil uil-pen"></i></a>
-                                                    <a href="#" class="btn btn-icon btn-pills btn-soft-danger"><i class="uil uil-trash"></i></a>
-                                                </td>
+                                                <td colspan="10" class="text-center">Không có dữ liệu</td>
                                             </tr>
-                                            stt++;
                                         }
                                     </tbody>
                                 </table>
                             </div>
                         </div>
                     </div>
+
+                    <!-- Modal chỉnh sửa Thuốc -->
+                    <div class="modal fade" id="editprofile" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header border-bottom p-3">
+                                    <h5 class="modal-title">Chỉnh sửa Thuốc</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body p-3 pt-4">
+                                    <!-- Form sử dụng POST và binding theo handler UpdateThuoc -->
+                                    <form method="post" asp-page-handler="UpdateThuoc" id="editThuocForm">
+                                        @* Anti-forgery token được thêm tự động *@
+                                        <input type="hidden" asp-for="ThuocUpdate.IdThuoc" />
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Tên Thuốc</label>
+                                                    <input asp-for="ThuocUpdate.TenThuoc" class="form-control" />
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Danh Mục</label>
+                                                    <input asp-for="ThuocUpdate.IdDm" class="form-control" />
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Xuất Xứ</label>
+                                                    <input asp-for="ThuocUpdate.IdXx" class="form-control" />
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Đơn Vị Tính</label>
+                                                    <input asp-for="ThuocUpdate.IdDvt" class="form-control" />
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Số lượng</label>
+                                                    <input asp-for="ThuocUpdate.SoLuongTon" class="form-control" />
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Giá Nhập</label>
+                                                    <input asp-for="ThuocUpdate.GiaNhap" class="form-control" />
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Đơn Giá</label>
+                                                    <input asp-for="ThuocUpdate.DonGia" class="form-control" />
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Thành Phần</label>
+                                                    <textarea asp-for="ThuocUpdate.ThanhPhan" class="form-control" rows="4"></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Script điền dữ liệu vào form modal -->
+                    <script>
+                        function populateEditForm(id, ten, idDm, idXx, idDvt, soLuong, giaNhap, donGia, thanhPhan) {
+                            // Gán dữ liệu vào các input qua các name tương ứng với binding của ThuocUpdate
+                            document.querySelector('[name="ThuocUpdate.IdThuoc"]').value = id;
+                            document.querySelector('[name="ThuocUpdate.TenThuoc"]').value = ten;
+                            document.querySelector('[name="ThuocUpdate.IdDm"]').value = idDm;
+                            document.querySelector('[name="ThuocUpdate.IdXx"]').value = idXx;
+                            document.querySelector('[name="ThuocUpdate.IdDvt"]').value = idDvt;
+                            document.querySelector('[name="ThuocUpdate.SoLuongTon"]').value = soLuong;
+                            document.querySelector('[name="ThuocUpdate.GiaNhap"]').value = giaNhap;
+                            document.querySelector('[name="ThuocUpdate.DonGia"]').value = donGia;
+                            document.querySelector('[name="ThuocUpdate.ThanhPhan"]').value = thanhPhan;
+
+                            // Mở modal chỉnh sửa
+                            var myModal = new bootstrap.Modal(document.getElementById('editprofile'));
+                            myModal.show();
+                        }
+                    </script>
 
 
                     <div class="row text-center">
@@ -449,81 +558,7 @@
             </ul><!--end icon-->
         </div>
     </div>
-    <!-- Offcanvas End -->
-    <!-- Modal start -->
-    <!-- Profile Settings Start -->
-    <div class="modal fade" id="editprofile" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header border-bottom p-3">
-                    <h5 class="modal-title" id="exampleModalLabel">Profile Settings</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body p-3 pt-4">
-                    <div class="row align-items-center">
-                        <div class="col-lg-2 col-md-4">
-                            <img src="~/images/doctors/01.jpg" class="avatar avatar-md-md rounded-pill shadow mx-auto d-block" alt="">
-                        </div><!--end col-->
 
-                        <div class="col-lg-5 col-md-8 text-center text-md-start mt-4 mt-sm-0">
-                            <h6 class="">Upload your picture</h6>
-                            <p class="text-muted mb-0">For best results, use an image at least 256px by 256px in either .jpg or .png format</p>
-                        </div><!--end col-->
-
-                        <div class="col-lg-5 col-md-12 text-lg-end text-center mt-4 mt-lg-0">
-                            <a href="#" class="btn btn-primary">Upload</a>
-                            <a href="#" class="btn btn-soft-primary ms-2">Remove</a>
-                        </div><!--end col-->
-                    </div><!--end row-->
-
-                    <form class="mt-4">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label">First Name</label>
-                                    <input name="name" id="name" type="text" class="form-control" placeholder="First Name :">
-                                </div>
-                            </div><!--end col-->
-
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label">Last Name</label>
-                                    <input name="name" id="name2" type="text" class="form-control" placeholder="Last Name :">
-                                </div>
-                            </div><!--end col-->
-
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label">Your Email</label>
-                                    <input name="email" id="email" type="email" class="form-control" placeholder="Your email :">
-                                </div>
-                            </div><!--end col-->
-
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label">Phone no.</label>
-                                    <input name="number" id="number" type="text" class="form-control" placeholder="Phone no. :">
-                                </div>
-                            </div><!--end col-->
-
-                            <div class="col-md-12">
-                                <div class="mb-3">
-                                    <label class="form-label">Your Bio Here</label>
-                                    <textarea name="comments" id="comments" rows="4" class="form-control" placeholder="Bio :"></textarea>
-                                </div>
-                            </div>
-                        </div><!--end row-->
-
-                        <div class="row">
-                            <div class="col-sm-12">
-                                <input type="submit" id="submit" name="send" class="btn btn-primary" value="Save changes">
-                            </div><!--end col-->
-                        </div><!--end row-->
-                    </form><!--end form-->
-                </div>
-            </div>
-        </div>
-    </div>
     <!-- Profile Settings End -->
     <!-- Profile Start -->
     <!-- Modal -->
